@@ -112,6 +112,30 @@ test "@intToFloat" {
     comptime try S.doTheTest();
 }
 
+test "@intToFloat(f80)" {
+    if (builtin.zig_backend == .stage1) return error.SkipZigTest;
+
+    if (builtin.zig_backend == .stage2_aarch64) return error.SkipZigTest; // TODO
+    if (builtin.zig_backend == .stage2_x86_64) return error.SkipZigTest; // TODO
+    if (builtin.zig_backend == .stage2_arm) return error.SkipZigTest; // TODO
+    if (builtin.zig_backend == .stage2_wasm) return error.SkipZigTest; // TODO
+    if (builtin.zig_backend == .stage2_c) return error.SkipZigTest; // TODO
+
+    const S = struct {
+        fn doTheTest() !void {
+            try testIntToFloat(-2);
+        }
+
+        fn testIntToFloat(k: i64) !void {
+            const f = @intToFloat(f80, k);
+            const i = @floatToInt(i64, f);
+            try expect(i == k);
+        }
+    };
+    try S.doTheTest();
+    comptime try S.doTheTest();
+}
+
 test "@floatToInt" {
     if (builtin.zig_backend == .stage2_aarch64) return error.SkipZigTest; // TODO
     if (builtin.zig_backend == .stage2_arm) return error.SkipZigTest; // TODO
